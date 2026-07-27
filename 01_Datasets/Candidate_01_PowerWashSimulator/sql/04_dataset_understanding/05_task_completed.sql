@@ -13,6 +13,28 @@ SELECT *
 FROM task_completed
 LIMIT 10;
 
+SELECT
+    COUNT(*) AS total_rows,
+    COUNT(*) - COUNT(pid) AS missing_pid,
+    COUNT(*) - COUNT(task_completed."Time") AS missing_time,
+    COUNT(*) - COUNT("LastTaskCompleted") AS missing_task,
+    COUNT(*) - COUNT("LastSubtaskCompleted") AS missing_subtask
+FROM task_completed;
+
+SELECT
+    MIN("Time") AS first_task_completed,
+    MAX("Time") AS last_task_completed
+FROM task_completed;
+
+SELECT COUNT(*) AS total_rows
+FROM task_completed;
+
+SELECT COUNT(*) AS cleaned_rows
+FROM (
+    SELECT DISTINCT *
+    FROM task_completed
+) t;
+
 -- ============================================================
 -- SCHEMA
 -- ============================================================

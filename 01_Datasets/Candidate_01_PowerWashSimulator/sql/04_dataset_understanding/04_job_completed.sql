@@ -13,6 +13,56 @@ SELECT *
 FROM job_completed
 LIMIT 10;
 
+-- Missig values
+SELECT
+    COUNT(*) AS total_rows,
+
+    COUNT(*) - COUNT(pid) AS missing_pid,
+    COUNT(*) - COUNT(job_completed."Time") AS missing_time,
+    COUNT(*) - COUNT(job_completed."LastJobCompleted") AS missing_jobname
+
+FROM job_completed;
+
+--Duplicate events
+SELECT
+    COUNT(*) AS total_rows,
+    COUNT(DISTINCT (pid, job_completed."Time", job_completed."LastJobCompleted")) AS distinct_events
+FROM job_completed;
+
+-- Data quality (Time stamp)
+SELECT
+    MIN(job_completed."Time") AS first_job_started,
+    MAX(job_completed."Time") AS last_job_started
+FROM job_completed;
+
+SELECT
+    pid,
+    job_completed."Time",
+    job_completed."LastJobCompleted",
+    COUNT(*) AS occurrences
+FROM job_completed
+GROUP BY pid, job_completed."Time", job_completed."LastJobCompleted"
+HAVING COUNT(*) > 1;
+
+SELECT
+    pid,
+    job_completed."Time",
+    job_completed."LastJobCompleted",
+    job_completed."LastTaskCompleted",
+    job_completed."LastSubtaskCompleted",
+    COUNT(*) AS occurrences
+FROM job_completed
+GROUP BY pid, job_completed."Time", job_completed."LastJobCompleted", job_completed."LastTaskCompleted", job_completed."LastSubtaskCompleted"
+HAVING COUNT(*) > 1
+ORDER BY occurrences DESC
+LIMIT 50;
+
+CREATE TABLE job_completed_clean AS
+SELECT DISTINCT *
+FROM job_completed;
+
+SELECT COUNT(*) AS total_rows
+FROM job_completed_clean;
 -- ============================================================
 -- SCHEMA
 -- ============================================================

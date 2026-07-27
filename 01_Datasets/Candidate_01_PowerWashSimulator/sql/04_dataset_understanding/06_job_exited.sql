@@ -7,6 +7,26 @@ SELECT *
 FROM job_exited
 LIMIT 10;
 
+SELECT
+    COUNT(*) AS total_rows,
+    COUNT(*) - COUNT(pid) AS missing_pid,
+    COUNT(*) - COUNT(job_exited."Time") AS missing_time,
+    COUNT(*) - COUNT(job_exited."CurrentJobName") AS missing_current_job
+FROM job_exited;
+
+SELECT
+    MIN("Time") AS first_job_exit,
+    MAX("Time") AS last_job_exit
+FROM job_exited;
+
+SELECT COUNT(*) AS total_rows
+FROM job_exited;
+
+SELECT COUNT(*) AS cleaned_rows
+FROM (
+    SELECT DISTINCT *
+    FROM job_exited
+) t;
 
 SELECT
 ordinal_position,

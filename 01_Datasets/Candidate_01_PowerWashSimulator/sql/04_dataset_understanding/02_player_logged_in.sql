@@ -21,6 +21,37 @@ SELECT *
 FROM player_logged_in
 LIMIT 10;
 
+--Missing values
+SELECT
+    COUNT(*) AS total_rows,
+
+    COUNT(*) - COUNT(pid) AS missing_pid,
+    COUNT(*) - COUNT(player_logged_in."Time") AS missing_time
+
+FROM player_logged_in;
+
+--Duplicate analysis
+SELECT
+    COUNT(*) AS total_rows,
+    COUNT(DISTINCT (pid, player_logged_in."Time")) AS distinct_events
+FROM player_logged_in;
+
+--Data quality (timestamp)
+SELECT
+    MIN(player_logged_in."Time") AS first_login_event,
+    MAX(player_logged_in."Time") AS last_login_event
+FROM player_logged_in;
+
+--Duplicate timestamps per player
+SELECT
+    pid,
+    player_logged_in."Time",
+    COUNT(*) AS occurrences
+FROM player_logged_in
+GROUP BY pid, player_logged_in."Time"
+HAVING COUNT(*) > 1
+ORDER BY occurrences DESC;
+
 -- ============================================================
 -- SECTION 2 : SCHEMA UNDERSTANDING
 -- ============================================================

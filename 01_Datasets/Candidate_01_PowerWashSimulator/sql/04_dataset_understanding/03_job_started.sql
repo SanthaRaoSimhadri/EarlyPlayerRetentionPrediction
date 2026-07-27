@@ -15,6 +15,39 @@ SELECT *
 FROM job_started
 LIMIT 10;
 
+-- Missig values
+SELECT
+    COUNT(*) AS total_rows,
+
+    COUNT(*) - COUNT(pid) AS missing_pid,
+    COUNT(*) - COUNT(job_started."Time") AS missing_time,
+    COUNT(*) - COUNT(job_started."CurrentJobName") AS missing_jobname
+
+FROM job_started;
+
+--Duplicate events
+SELECT
+    COUNT(*) AS total_rows,
+    COUNT(DISTINCT (pid, job_started."Time", job_started."CurrentJobName")) AS distinct_events
+FROM job_started;
+
+-- Data quality (Time stamp)
+SELECT
+    MIN(job_started."Time") AS first_job_started,
+    MAX(job_started."Time") AS last_job_started
+FROM job_started;
+
+SELECT
+    pid,
+    job_started."Time",
+    job_started."CurrentJobName",
+    COUNT(*) AS occurrences
+FROM job_started
+GROUP BY pid, job_started."Time", job_started."CurrentJobName"
+HAVING COUNT(*) > 1;
+
+
+
 -- ============================================================
 -- SCHEMA
 -- ============================================================
