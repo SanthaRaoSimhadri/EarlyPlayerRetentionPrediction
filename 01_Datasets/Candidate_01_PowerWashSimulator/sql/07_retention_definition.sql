@@ -75,3 +75,8 @@ SELECT COLUMN_NAME FROM information_schema."columns" WHERE TABLE_NAME = 'player_
 SELECT *
 FROM player_features_final
 LIMIT 5;
+
+
+---- EXPORT CSV ----
+SELECT *
+FROM player_features_final;
