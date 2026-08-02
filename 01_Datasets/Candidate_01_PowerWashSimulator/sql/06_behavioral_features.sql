@@ -413,9 +413,7 @@ SELECT
 
     AVG("CurrentSessionLength") AS avg_session_length,
 
-    MAX("CurrentSessionLength") AS max_session_length,
-
-    COUNT(DISTINCT "CurrentJobName") AS distinct_jobs_played
+    MAX("CurrentSessionLength") AS max_session_length
 
 FROM job_started_24h
 GROUP BY pid;
@@ -427,39 +425,6 @@ SELECT
     pid,
     COUNT(*)
 FROM gameplay_state_features
-GROUP BY pid
-HAVING COUNT(*) > 1;
-
-
-/*
-===========================================================
-STEP 7: Create Interruption Features
-===========================================================
-*/
-
-DROP TABLE IF EXISTS interruption_features;
-
-CREATE TABLE interruption_features AS
-SELECT
-
-    pid,
-
-    COUNT(*) AS interruption_count,
-
-    AVG("CurrentSessionLength") AS avg_interruption_session,
-
-    MAX("CurrentSessionLength") AS longest_interrupted_session
-
-FROM job_exited_24h
-GROUP BY pid;
-
---- VALIDATION ---
-SELECT COUNT(*) FROM interruption_features;
-
-SELECT
-    pid,
-    COUNT(*)
-FROM interruption_features
 GROUP BY pid
 HAVING COUNT(*) > 1;
 
@@ -586,16 +551,8 @@ SELECT
 
     COALESCE(gs.avg_session_length,0)             AS avg_session_length,
     COALESCE(gs.max_session_length,0)             AS max_session_length,
-    COALESCE(gs.distinct_jobs_played,0)           AS distinct_jobs_played,
 
-    ------------------------------------------------------------------
-    -- Interruption
-    ------------------------------------------------------------------
-
-    COALESCE(i.interruption_count,0)              AS interruption_count,
-    COALESCE(i.avg_interruption_session,0)        AS avg_interruption_session,
-    COALESCE(i.longest_interrupted_session,0)     AS longest_interrupted_session,
-
+    
     ------------------------------------------------------------------
     -- Play Style
     ------------------------------------------------------------------
@@ -622,8 +579,6 @@ ON p.pid = pe.pid
 LEFT JOIN gameplay_state_features gs
 ON p.pid = gs.pid
 
-LEFT JOIN interruption_features i
-ON p.pid = i.pid
 
 LEFT JOIN playstyle_features ps
 ON p.pid = ps.pid;
